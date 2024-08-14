@@ -45,23 +45,69 @@ func getMovies(c echo.Context) error {
 
 // 映画の詳細情報を取得する関数
 func getMovie(c echo.Context) error {
-	id := c.Param("id")
+	imdbID := c.Param("id")
 	var movie models.Movie
-	if err := db.DB.First(&movie, id).Error; err != nil {
-		return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found"})
+	// データベースから映画を検索
+	if err := db.DB.Where("imdb_id = ?", imdbID).First(&movie).Error; err == nil {
+		return c.JSON(http.StatusOK, movie)
 	}
+	
+	// 映画がデータベースに存在しない場合、OMDb APIから取得
+	omdbApiKey := os.Getenv("OMDB_API_KEY")
+	omdbUrl := fmt.Sprintf("http://www.omdbapi.com/?i=%s&apikey=%s", imdbID, omdbApiKey)
+
+	resp, err := http.Get(omdbUrl)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error fetching movie details from OMDb API"})
+	}
+	defer resp.Body.Close()
+
+	if err := json.NewDecoder(resp.Body).Decode(&movie); err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error decoding movie details"})
+	}
+
+	// データベースに保存せず、所得したデータをそのまま返す
 	return c.JSON(http.StatusOK, movie)
 }
 
 // 観たい映画リストに追加する関数
 func addToWatchList(c echo.Context) error {
+	imdbID := c.FormValue("imdbID")
 	var movie models.Movie
-	if err := c.Bind(&movie); err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid movie data"})
+
+	if err := db.DB.Where("imdb_id = ?", imdbID).First(&movie).Error; err == nil {
+		// 映画がデータベースに存在する場合、エラーを返す
+		return c.JSON(http.StatusConflict, echo.Map{"message": "Movie already exists in the database"})
 	}
+	// フロントエンドから映画情報を取得
+	movie.ImdbID = imdbID
+    movie.Title = c.FormValue("title")
+    movie.Year = c.FormValue("year")
+    movie.Rated = c.FormValue("rated")
+    movie.Released = c.FormValue("released")
+    movie.Runtime = c.FormValue("runtime")
+    movie.Genre = c.FormValue("genre")
+    movie.Director = c.FormValue("director")
+    movie.Writer = c.FormValue("writer")
+    movie.Actors = c.FormValue("actors")
+    movie.Plot = c.FormValue("plot")
+    movie.Language = c.FormValue("language")
+    movie.Country = c.FormValue("country")
+    movie.Awards = c.FormValue("awards")
+    movie.Poster = c.FormValue("poster")
+    movie.Metascore = c.FormValue("metascore")
+    movie.ImdbRating = c.FormValue("imdbRating")
+    movie.ImdbVotes = c.FormValue("imdbVotes")
+    movie.Type = c.FormValue("type")
+    movie.DVD = c.FormValue("dvd")
+    movie.BoxOffice = c.FormValue("boxOffice")
+    movie.Production = c.FormValue("production")
+    movie.Website = c.FormValue("website")
+	movie.Watched = false
+	movie.Rating = 0
+	movie.Review = ""
 
-	movie.WatchList = true
-
+	// 映画をデータベースに保存
 	if err := db.DB.Create(&movie).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not add movie to watchList"})
 	}

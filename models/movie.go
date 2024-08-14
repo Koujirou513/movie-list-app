@@ -18,20 +18,19 @@ type Movie struct {
     Plot        string `json:"plot"`
     Language    string `json:"language"`
     Country     string `json:"country"`
-    Awards      string `json:"awards"`
+    Awards      string `json:"awards,omitempty"`
     Poster      string `json:"poster"`
-    Metascore   string `json:"metascore"`
-    ImdbRating  string `json:"imdbRating"`
-    ImdbVotes   string `json:"imdbVotes"`
+    Metascore   string `json:"metascore,omitempty"`
+    ImdbRating  string `json:"imdbRating,omitempty"`
+    ImdbVotes   string `json:"imdbVotes,omitempty"`
     ImdbID      string `json:"imdbID"`
-    Type        string `json:"type"`
-    DVD         string `json:"dvd"`
-    BoxOffice   string `json:"boxOffice"`
+    Type        string `json:"type,omitempty"`
+    DVD         string `json:"dvd,omitempty"`
+    BoxOffice   string `json:"boxOffice,omitempty"`
     Production  string `json:"production"`
-    Website     string `json:"website"`
-	WatchList   bool   `json:"watchList"`
+    Website     string `json:"website,omitempty"`
 	Watched     bool   `json:"watched"`
-	Rating      int    `json:"rating,omitempty"` // 1~5の星評価
-	Review      string `json:"review,omitempty"` // 視聴後の感想
+	Rating      int    `json:"rating"` // 1~5の星評価
+	Review      string `json:"review"` // 視聴後の感想
 }
 
