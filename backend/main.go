@@ -45,74 +45,28 @@ func getMovies(c echo.Context) error {
 
 // 映画の詳細情報を取得する関数
 func getMovie(c echo.Context) error {
-	imdbID := c.Param("id")
+	id := c.Param("id")
 	var movie models.Movie
 	// データベースから映画を検索
-	if err := db.DB.Where("imdb_id = ?", imdbID).First(&movie).Error; err == nil {
-		return c.JSON(http.StatusOK, movie)
+	if err := db.DB.First(&movie, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found in the database"})
 	}
-	
-	// 映画がデータベースに存在しない場合、OMDb APIから取得
-	omdbApiKey := os.Getenv("OMDB_API_KEY")
-	omdbUrl := fmt.Sprintf("http://www.omdbapi.com/?i=%s&apikey=%s", imdbID, omdbApiKey)
-
-	resp, err := http.Get(omdbUrl)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error fetching movie details from OMDb API"})
-	}
-	defer resp.Body.Close()
-
-	if err := json.NewDecoder(resp.Body).Decode(&movie); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error decoding movie details"})
-	}
-
-	// データベースに保存せず、所得したデータをそのまま返す
 	return c.JSON(http.StatusOK, movie)
 }
 
 // 観たい映画リストに追加する関数
 func addToWatchList(c echo.Context) error {
-	imdbID := c.FormValue("imdbID")
+	id := c.FormValue("id")
 	var movie models.Movie
 
-	if err := db.DB.Where("imdb_id = ?", imdbID).First(&movie).Error; err == nil {
-		// 映画がデータベースに存在する場合、エラーを返す
-		return c.JSON(http.StatusConflict, echo.Map{"message": "Movie already exists in the database"})
+	if err := db.DB.First(&movie, id).Error; err == nil {
+		// 映画がデータベースに存在する場合、watchListをtrueに設定
+		movie.WatchList = true
+		db.DB.Save(&movie)
+		return c.JSON(http.StatusOK, movie)
 	}
-	// フロントエンドから映画情報を取得
-	movie.ImdbID = imdbID
-    movie.Title = c.FormValue("title")
-    movie.Year = c.FormValue("year")
-    movie.Rated = c.FormValue("rated")
-    movie.Released = c.FormValue("released")
-    movie.Runtime = c.FormValue("runtime")
-    movie.Genre = c.FormValue("genre")
-    movie.Director = c.FormValue("director")
-    movie.Writer = c.FormValue("writer")
-    movie.Actors = c.FormValue("actors")
-    movie.Plot = c.FormValue("plot")
-    movie.Language = c.FormValue("language")
-    movie.Country = c.FormValue("country")
-    movie.Awards = c.FormValue("awards")
-    movie.Poster = c.FormValue("poster")
-    movie.Metascore = c.FormValue("metascore")
-    movie.ImdbRating = c.FormValue("imdbRating")
-    movie.ImdbVotes = c.FormValue("imdbVotes")
-    movie.Type = c.FormValue("type")
-    movie.DVD = c.FormValue("dvd")
-    movie.BoxOffice = c.FormValue("boxOffice")
-    movie.Production = c.FormValue("production")
-    movie.Website = c.FormValue("website")
-	movie.Watched = false
-	movie.Rating = 0
-	movie.Review = ""
-
-	// 映画をデータベースに保存
-	if err := db.DB.Create(&movie).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not add movie to watchList"})
-	}
-
-	return c.JSON(http.StatusCreated, movie)
+	// 映画がデータベースに存在しない場合、エラーを返す
+	return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found in the database"})
 }
 
 // 観たい映画リストから削除する関数
@@ -127,11 +81,24 @@ func deleteMovie(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-// 映画を検索する関数
+// 映画を検索する関数（タイトルは必須、上映年はオプション）
 func searchMovies(c echo.Context) error {
-	query := c.QueryParam("q")
+	title := c.QueryParam("title")
+	year := c.QueryParam("year")
+
+	if title == "" {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Title is required"})
+	}
+
+	// 重複チェック
+	var existingMovie models.Movie
+	if err := db.DB.Where("title = ? AND year = ? ", title, year).First(&existingMovie).Error; err == nil {
+		// すでに存在する場合はその映画情報を返す
+		return c.JSON(http.StatusOK, existingMovie)
+	}
+
 	omdbApiKey := os.Getenv("OMDB_API_KEY")
-	omdbUrl := fmt.Sprintf("http://www.omdbapi.com/?s=%s&apikey=%s", query, omdbApiKey)
+	omdbUrl := fmt.Sprintf("http://www.omdbapi.com/?t=%s&y=%s&apikey=%s", title, year, omdbApiKey)
 
 	resp, err := http.Get(omdbUrl)
 	if err != nil {
@@ -139,12 +106,17 @@ func searchMovies(c echo.Context) error {
 	}
 	defer resp.Body.Close()
 
-	var searchResults map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&searchResults); err != nil {
-		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error decoding movie data"})
+	var movie models.Movie
+	if err := json.NewDecoder(resp.Body).Decode(&movie); err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error decoding movie details"})
+	}
+	
+	// 映画情報をデータベースに保存
+	if err := db.DB.Create(&movie).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Could not save movie data"})
 	}
 
-	return c.JSON(http.StatusOK, searchResults)
+	return c.JSON(http.StatusOK, movie)
 }
 
 // 映画の評価と感想を追加する関数
@@ -165,6 +137,7 @@ func updateMovieRatingAndReview(c echo.Context) error {
 
 	movie.Rating = int(rating)
 	movie.Review = review
+	movie.WatchList = false
 	movie.Watched = true
 
 	db.DB.Save(&movie)

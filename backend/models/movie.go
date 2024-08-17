@@ -29,6 +29,7 @@ type Movie struct {
     BoxOffice   string `json:"boxOffice,omitempty"`
     Production  string `json:"production"`
     Website     string `json:"website,omitempty"`
+    WatchList   bool   `json:"watchList"`
 	Watched     bool   `json:"watched"`
 	Rating      int    `json:"rating"` // 1~5の星評価
 	Review      string `json:"review"` // 視聴後の感想
