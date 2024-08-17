@@ -137,7 +137,6 @@ func updateMovieRatingAndReview(c echo.Context) error {
 
 	movie.Rating = int(rating)
 	movie.Review = review
-	movie.WatchList = false
 	movie.Watched = true
 
 	db.DB.Save(&movie)
