@@ -29,18 +29,18 @@ export default function SearchBar({ onSearchResults }: SearchBarProps) {
     };
     return (
         <div className='flex items-center space-x-2 bg-gray-200 p-4 rounded-md'>
-            <label className='text-sm font-semibold'>タイトル</label>
+            <label className='text-sm font-semibold text-black'>タイトル</label>
             <input
                 type="text"
-                className="border p-2 flex-grow"
+                className="border p-2 flex-grow text-black"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="映画のタイトルを入力"
             />
-            <label className='text-sm font-semibold'>上映年</label>
+            <label className='text-sm font-semibold text-black'>上映年</label>
             <input 
                 type='text'
-                className='border p-2 w-20'
+                className='border p-2 w-20 text-black'
                 value={year}
                 onChange={(e) => setYear(e.target.value)}
                 placeholder='任意'

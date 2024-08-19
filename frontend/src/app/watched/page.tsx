@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import MovieCard from '@/app/components/MovieCard';
@@ -19,7 +21,7 @@ export default function WatchList() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-4">観たい映画リスト</h1>
+      <h1 className="text-3xl font-bold mb-4">もう見た映画リスト</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {movies.map((movie) => (
           <MovieCard key={movie.id} movie={movie} onClick={() => handleMovieClick(movie)} />
