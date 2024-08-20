@@ -9,19 +9,20 @@ interface MovieCardProps {
 const MovieCard: FC<MovieCardProps> = ({ movie, onClick }) => {
   return (
     <div
-      className="border p-4 rounded shadow hover:bg-gray-100 cursor-pointer"
+      className="border p-4 rounded shadow hover:bg-gray-100 cursor-pointer text-black"
       onClick={onClick}
     >
       <Image 
-        src={movie.Poster} 
-        alt={movie.Title} 
-        width={20} 
-        height={30} 
+        src={movie.poster || '/fallback-image.jpg'} 
+        alt={movie.title || 'Movie Poster'} 
+        width={300} 
+        height={450} 
         className="object-cover mb-2" 
       />
-      <h2 className="text-xl font-bold">{movie.Title}</h2>
-      <p>{movie.Year}</p>
-      <p>{movie.Genre}</p>
+      <h2 className="text-xl font-bold">{movie.title}</h2>
+      <p>監督： {movie.director}</p>
+      <p>上映年： {movie.year}</p>
+      <p>ジャンル： {movie.genre}</p>
       <p>{movie.runtime}</p>
     </div>
   );

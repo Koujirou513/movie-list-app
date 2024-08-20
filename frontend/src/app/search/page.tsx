@@ -17,6 +17,7 @@ export default function SearchPage() {
 
     return (
         <div>
+            <h1 className="text-3xl font-bold my-4 text-black text-center">映画を探す</h1>
             <PageSelectionBar />
             <div className='p-4'>
                 <SearchBar onSearchResults={handleSearchResults} />
