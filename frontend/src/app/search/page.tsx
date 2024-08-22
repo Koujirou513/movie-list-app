@@ -11,8 +11,8 @@ export default function SearchPage() {
     const [movies, setMovies] = useState<any[]>([]);
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
-    const handleDelete = (id: string) => {
-        setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id))
+    const handleDelete = (ID: string) => {
+        setMovies((prevMovies) => prevMovies.filter((movie) => movie.ID !== ID))
     }
 
     const handleSearchResults = (results: any) => {
@@ -29,10 +29,10 @@ export default function SearchPage() {
                     {movies.length > 0 ? (
                         movies.map((movie) => (
                             <MovieCard
-                                key={movie.id}
+                                key={movie.ID}
                                 movie={movie}
                                 onClick={() => setSelectedMovie(movie)}
-                                onDelete={handleDelete}
+                                onDelete={() => handleDelete(movie.ID)}
                             />
                         ))
                     ) : (

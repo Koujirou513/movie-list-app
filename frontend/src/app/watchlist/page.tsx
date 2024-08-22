@@ -11,7 +11,7 @@ import { useMovieActions } from "@/hooks/useMovieActions";
 export default function WatchListPage() {
   const { movies: watchlistMovies, loading } = useMovies('watchlist');
   const { movies, handleDelete } = useMovieActions(watchlistMovies);
-  
+
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   if (loading) return <p>Loading...</p>
@@ -27,10 +27,10 @@ export default function WatchListPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {watchlistMovies.map((movie) => (
           <MovieCard 
-            key={movie.id} 
+            key={movie.ID} 
             movie={movie} 
             onClick={() => handleMovieClick(movie)} 
-            onDelete={handleDelete}
+            onDelete={() => handleDelete(movie.ID)}
           />
         ))}
       </div>

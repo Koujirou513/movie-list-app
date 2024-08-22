@@ -72,7 +72,7 @@ export default function MovieDetailModal({ movie, onClose }: MovieDetailModalPro
 
             {isRatingModalOpen && (
                 <RatingModal
-                    movieId={movie.id}
+                    movieId={movie.ID}
                     onClose={() => setIsRatingModalOpen(false)}
                     onSubmit={handleRatingSubmit}
                 />

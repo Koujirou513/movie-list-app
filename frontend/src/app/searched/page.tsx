@@ -27,18 +27,18 @@ export default function SearchedPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {searchedMovies.map(movie => (
                     <MovieCard 
-                        key={movie.id} 
+                        key={movie.ID} 
                         movie={movie} 
                         onClick={() => handleMovieClick(movie)}
-                        onDelete={handleDelete}
+                        onDelete={() => handleDelete(movie.ID)}
                     />
                 ))}
             </div>
             {selectedMovie && (
                 <MovieDetailModal
-                movie={selectedMovie}
-                onClose={() => setSelectedMovie(null)}
-            />
+                    movie={selectedMovie}
+                    onClose={() => setSelectedMovie(null)}
+                />
             )}
         </div>
     );

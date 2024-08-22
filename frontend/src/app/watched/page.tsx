@@ -27,10 +27,10 @@ export default function WatchedPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {watchedMovies.map((movie) => (
           <MovieCard 
-            key={movie.id} 
+            key={movie.ID} 
             movie={movie} 
             onClick={() => handleMovieClick(movie)}
-            onDelete={handleDelete}
+            onDelete={() => handleDelete(movie.ID)}
           />
         ))}
       </div>
