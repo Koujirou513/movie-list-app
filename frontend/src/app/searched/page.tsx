@@ -6,9 +6,11 @@ import MovieCard from "../components/MovieCard";
 import PageSelectionBar from "../components/PageSelectionBar";
 import MovieDetailModal from "../components/MovieDetailModal";
 import { useMovies } from "@/hooks/useMovies";
+import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function SearchedPage() {
-    const { searchedMovies, loading } = useMovies();
+    const { movies: searchedMovies, loading } = useMovies('searched');
+    const { movies, handleDelete } = useMovieActions(searchedMovies);
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
 
@@ -24,7 +26,12 @@ export default function SearchedPage() {
             <PageSelectionBar/>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {searchedMovies.map(movie => (
-                    <MovieCard key={movie.id} movie={movie} onClick={() => handleMovieClick(movie)}/>
+                    <MovieCard 
+                        key={movie.id} 
+                        movie={movie} 
+                        onClick={() => handleMovieClick(movie)}
+                        onDelete={handleDelete}
+                    />
                 ))}
             </div>
             {selectedMovie && (

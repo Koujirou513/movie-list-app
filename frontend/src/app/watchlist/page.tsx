@@ -6,9 +6,12 @@ import MovieCard from '@/app/components/MovieCard';
 import MovieDetailModal from '@/app/components/MovieDetailModal';
 import PageSelectionBar from "../components/PageSelectionBar";
 import { useMovies } from '@/hooks/useMovies';
+import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function WatchListPage() {
-  const { watchlistMovies, loading} = useMovies();
+  const { movies: watchlistMovies, loading } = useMovies('watchlist');
+  const { movies, handleDelete } = useMovieActions(watchlistMovies);
+  
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   if (loading) return <p>Loading...</p>
@@ -23,7 +26,12 @@ export default function WatchListPage() {
       <PageSelectionBar/>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {watchlistMovies.map((movie) => (
-          <MovieCard key={movie.id} movie={movie} onClick={() => handleMovieClick(movie)} />
+          <MovieCard 
+            key={movie.id} 
+            movie={movie} 
+            onClick={() => handleMovieClick(movie)} 
+            onDelete={handleDelete}
+          />
         ))}
       </div>
       {selectedMovie && (

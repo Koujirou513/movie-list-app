@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export function useMovies() {
+export function useMovies(filter: 'watchlist' | 'watched' | 'searched') {
     const [movies, setMovies] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -20,14 +20,14 @@ export function useMovies() {
         fetchMovies();
     }, []);
 
-    // 観たい映画リスト（watchlistがtrue）
-    const watchlistMovies = movies.filter(movie => movie.WatchList && !movie.Watched);
+    let filteredMovies: any[] = [];
+    if (filter === 'watchlist') {
+        filteredMovies = movies.filter(movie => movie.WatchList && !movie.Watched);
+    } else if (filter === 'watched') {
+        filteredMovies = movies.filter(movie => movie.Watched);
+    } else if (filter === 'searched') {
+        filteredMovies = movies.filter(movie => !movie.WatchList && !movie.Watched);
+    }
 
-    // もう観た映画リスト（watchedがtrue）
-    const watchedMovies = movies.filter(movie => movie.Watched);
-
-    // 検索した映画リスト（watchlistとwatchedがfalse）
-    const searchedMovies =movies.filter(movie => !movie.WatchList && !movie.Watched);
-
-    return { watchlistMovies, watchedMovies, searchedMovies, loading}
+    return { movies: filteredMovies, loading};
 }

@@ -11,6 +11,10 @@ export default function SearchPage() {
     const [movies, setMovies] = useState<any[]>([]);
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
+    const handleDelete = (id: string) => {
+        setMovies((prevMovies) => prevMovies.filter((movie) => movie.id !== id))
+    }
+
     const handleSearchResults = (results: any) => {
         setMovies(results);
     };
@@ -28,6 +32,7 @@ export default function SearchPage() {
                                 key={movie.id}
                                 movie={movie}
                                 onClick={() => setSelectedMovie(movie)}
+                                onDelete={handleDelete}
                             />
                         ))
                     ) : (
