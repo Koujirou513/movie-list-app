@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-export function useMovies(filter: 'watchlist' | 'watched' | 'searched') {
+export function useMovies(filter: 'watchList' | 'watched' | 'searched') {
     const [movies, setMovies] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,12 +21,12 @@ export function useMovies(filter: 'watchlist' | 'watched' | 'searched') {
     }, []);
 
     let filteredMovies: any[] = [];
-    if (filter === 'watchlist') {
-        filteredMovies = movies.filter(movie => movie.WatchList && !movie.Watched);
+    if (filter === 'watchList') {
+        filteredMovies = movies.filter(movie => movie.watchList && !movie.watched);
     } else if (filter === 'watched') {
-        filteredMovies = movies.filter(movie => movie.Watched);
+        filteredMovies = movies.filter(movie => movie.watched);
     } else if (filter === 'searched') {
-        filteredMovies = movies.filter(movie => !movie.WatchList && !movie.Watched);
+        filteredMovies = movies.filter(movie => !movie.watchList && !movie.watched);
     }
 
     return { movies: filteredMovies, loading};

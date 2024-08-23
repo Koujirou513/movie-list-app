@@ -24,9 +24,8 @@ export default function MovieDetailModal({ movie, onClose }: MovieDetailModalPro
 
     const handleAddToWatchList = async () => {
         try {
-            await axios.post(`/api/movies/watchlist`, {
-                id: movie.id
-            });
+            await axios.put(`/api/movies/watchlist/${movie.ID}`);
+            console.log('観たい映画リストに送信したID:', movie.ID)
             alert('観たい映画リストに追加しました')
         } catch (error) {
             console.error('Error adding to watchlist', error);

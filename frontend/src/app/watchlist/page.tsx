@@ -9,7 +9,7 @@ import { useMovies } from '@/hooks/useMovies';
 import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function WatchListPage() {
-  const { movies: watchlistMovies, loading } = useMovies('watchlist');
+  const { movies: watchlistMovies, loading } = useMovies('watchList');
   const { movies, handleDelete } = useMovieActions(watchlistMovies);
 
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);

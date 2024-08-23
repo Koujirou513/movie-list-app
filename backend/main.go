@@ -26,7 +26,7 @@ func main() {
 	e.GET("/movies", getMovies) // 映画リストを取得
 	e.GET("/movies/:id", getMovie) // 映画の詳細を表示
 
-	e.POST("/movies/watchlist", addToWatchList)	// 観たい映画リストに追加
+	e.PUT("/movies/watchlist/:id", updateWatchList)	// 観たい映画リストに追加
 	e.DELETE("/movies/watchlist/:id", deleteMovie) // 観たい映画リストから削除
 
 	e.GET("/movies/search", searchMovies) // 映画検索
@@ -55,18 +55,19 @@ func getMovie(c echo.Context) error {
 }
 
 // 観たい映画リストに追加する関数
-func addToWatchList(c echo.Context) error {
-	id := c.FormValue("id")
+func updateWatchList(c echo.Context) error {
+	id := c.Param("id") // URLパラメータから映画IDを取得
 	var movie models.Movie
 
-	if err := db.DB.First(&movie, id).Error; err == nil {
-		// 映画がデータベースに存在する場合、watchListをtrueに設定
-		movie.WatchList = true
-		db.DB.Save(&movie)
-		return c.JSON(http.StatusOK, movie)
+	if err := db.DB.Where("id = ?", id).First(&movie).Error; err != nil {
+		return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found in the database"})
 	}
-	// 映画がデータベースに存在しない場合、エラーを返す
-	return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found in the database"})
+	// 映画が存在する場合、watchListをtrueにする
+	movie.WatchList = true
+	if err := db.DB.Save(&movie).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Failed to update movie"})
+	}
+	return c.JSON(http.StatusOK, movie)
 }
 
 // 観たい映画リストから削除する関数
