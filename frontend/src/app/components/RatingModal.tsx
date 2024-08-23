@@ -19,7 +19,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ movieId, onClose, onSubmit })
 
         try {
             await axios.put(`/api/movies/${movieId}/rate`, {
-                rating: rating.toString(),
+                rating,
                 review,
             });
             onSubmit(rating, review);
@@ -31,7 +31,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ movieId, onClose, onSubmit })
     };
 
     return (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50'>
+        <div className='fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 text-black'>
             <div className='bg-white p-6 rounded-lg shadow-lg w-full max-w-md'>
                 <h2 className='text-2xl font-bold mb-4'>評価を入力</h2>
                 <label className='block mb-2'>評価(1-5):</label>
@@ -51,7 +51,7 @@ const RatingModal: React.FC<RatingModalProps> = ({ movieId, onClose, onSubmit })
                     rows={4}
                 />
                 <div className='flex justify-end space-x-2'>
-                    <button onClick={onClose} className='bg-gray-700 p-2 rounded-md'>
+                    <button onClick={onClose} className='bg-gray-400 p-2 rounded-md'>
                         キャンセル
                     </button>
                     <button onClick={handleSubmit} className='bg-green-500 text-white p-2 rounded-md'>

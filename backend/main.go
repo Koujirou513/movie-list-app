@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"os"
 	"fmt"
-	"strconv"
 
 	"github.com/koujirou513/movie-list-app/db"
 	"github.com/koujirou513/movie-list-app/models"
@@ -120,6 +119,7 @@ func searchMovies(c echo.Context) error {
 	return c.JSON(http.StatusOK, movie)
 }
 
+
 // 映画の評価と感想を追加する関数
 func updateMovieRatingAndReview(c echo.Context) error {
 	id := c.Param("id")
@@ -127,17 +127,18 @@ func updateMovieRatingAndReview(c echo.Context) error {
 	if err := db.DB.First(&movie, id).Error; err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Movie not found"})
 	}
-
-	ratingStr := c.FormValue("rating")
-	review := c.FormValue("review")
-
-	rating, err := strconv.Atoi(ratingStr)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid rating value"})
+	// リクエストを構造体にバインド
+	var req models.RatingRequest
+	if err := c.Bind(&req); err != nil {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request body"})
 	}
 
-	movie.Rating = int(rating)
-	movie.Review = review
+	if req.Rating < 1 || req.Rating > 5 {
+		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Invalid request value"})
+	}
+
+	movie.Rating = req.Rating
+	movie.Review = req.Review
 	movie.Watched = true
 
 	db.DB.Save(&movie)
