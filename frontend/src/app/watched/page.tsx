@@ -11,10 +11,8 @@ import { useMovieActions } from '@/hooks/useMovieActions';
 
 export default function WatchedPage() {
   const { movies: watchedMovies, loading, updateMovie } = useMovies('watched');
-  const { movies, handleDelete } = useMovieActions(watchedMovies); 
+  const { handleDelete } = useMovieActions(); 
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
-
-  if (loading) return <p>Loading...</p>
 
   const handleMovieClick = (movie: any) => {
     setSelectedMovie(movie);
@@ -30,6 +28,14 @@ export default function WatchedPage() {
     setSelectedMovie(null) // モーダルを閉じる
   }
 
+  const handleDeleteMovie = (ID: string) => {
+    handleDelete(ID, () => {
+      updateMovie(null); // 映画を削除後に状態を更新
+    })
+  }
+
+  if (loading) return <p>Loading...</p>
+
   return (
     <div>
       <h1 className="text-3xl font-bold my-4 text-black text-center">もう見た映画リスト</h1>
@@ -40,7 +46,7 @@ export default function WatchedPage() {
             key={movie.ID} 
             movie={movie} 
             onClick={() => handleMovieClick(movie)}
-            onDelete={() => handleDelete(movie.ID)}
+            onDelete={() => handleDeleteMovie(movie.ID)}
           />
         ))}
       </div>

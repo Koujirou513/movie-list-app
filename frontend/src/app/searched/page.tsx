@@ -10,11 +10,8 @@ import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function SearchedPage() {
     const { movies: searchedMovies, loading, updateMovie } = useMovies('searched');
-    const { movies, handleDelete } = useMovieActions(searchedMovies);
+    const { handleDelete } = useMovieActions();
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
-
-
-    if (loading) return <p>Loading...</p>
 
     const handleMovieClick = (movie: any) => {
         setSelectedMovie(movie);
@@ -22,13 +19,21 @@ export default function SearchedPage() {
 
     const handleRatingSubmit = (updatedMovie: any) => {
         updateMovie(updatedMovie);
-        setSelectedMovie(updatedMovie);
+        setSelectedMovie(null);
     };  
     
     const handleAddToWatchList = (updatedMovie: any) => {
         updateMovie(updatedMovie);
         setSelectedMovie(null) // モーダルを閉じる
     }
+
+    const handleDeleteMovie = (ID: string) => {
+        handleDelete(ID, () => {
+          updateMovie(null); // 映画を削除後に状態を更新
+        })
+    }
+
+    if (loading) return <p>Loading...</p>
 
     return (
         <div>
@@ -40,7 +45,7 @@ export default function SearchedPage() {
                         key={movie.ID} 
                         movie={movie} 
                         onClick={() => handleMovieClick(movie)}
-                        onDelete={() => handleDelete(movie.ID)}
+                        onDelete={() => handleDeleteMovie(movie.ID)}
                     />
                 ))}
             </div>

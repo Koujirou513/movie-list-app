@@ -1,6 +1,5 @@
 import { FC } from 'react';
 import Image from 'next/image';
-import axios from 'axios';
 
 interface MovieCardProps {
   movie: any;
@@ -9,6 +8,8 @@ interface MovieCardProps {
 }
 
 const MovieCard: FC<MovieCardProps> = ({ movie, onClick, onDelete }) => {
+  const posterSrc = movie.poster && movie.poster !== "N/A" ? movie.poster : '/fallback-image.jpg';
+
   return (
     <div
       className="flex justify-between border p-4 mt-4 rounded shadow hover:bg-blue-100 cursor-pointer text-black"
@@ -16,7 +17,7 @@ const MovieCard: FC<MovieCardProps> = ({ movie, onClick, onDelete }) => {
     >
       <div className='flex'>
         <Image 
-          src={movie.poster || '/fallback-image.jpg'} 
+          src={posterSrc} 
           alt={movie.title || 'Movie Poster'} 
           width={70} 
           height={45} 
@@ -34,9 +35,7 @@ const MovieCard: FC<MovieCardProps> = ({ movie, onClick, onDelete }) => {
         className='bg-gray-400 w-4 h-4 flex items-center text-center px-1 rounded-sm hover:bg-gray-600'
         onClick={(e) => {
           e.stopPropagation(); // 親要素のクリックイベントが発火しない様にする
-          if (onDelete) {
-            onDelete();
-          }
+          if (onDelete) onDelete();
         }}
       >
         <button className='cursor-pointer text-white'>x</button>

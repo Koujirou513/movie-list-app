@@ -31,6 +31,7 @@ export function useMovies(filter: 'watchList' | 'watched' | 'searched') {
 
     // 映画を更新する関数
     const updateMovie = (updatedMovie: any) => {
+        if (!updatedMovie || !updatedMovie.ID) return;
         setMovies((prevMovies) => 
             prevMovies.map((movie) => movie.ID === updatedMovie.ID ? updatedMovie : movie)
         );
