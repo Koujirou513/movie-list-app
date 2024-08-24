@@ -19,6 +19,20 @@ export default function SearchPage() {
         setMovies(results);
     };
 
+    const handleRatingSubmit = (updatedMovie: any) => {
+        setMovies((prevMovies) => 
+        prevMovies.map((movie) => movie.ID === updatedMovie.ID ? updatedMovie : movie)
+        );
+        setSelectedMovie(null);
+    }
+
+    const handleAddToWatchList = (updatedMovie: any) => {
+        setMovies((prevMovies) => 
+            prevMovies.map((movie) => movie.ID === updatedMovie.ID ? updatedMovie : movie)
+        );
+        setSelectedMovie(null)
+    };
+
     return (
         <div>
             <h1 className="text-3xl font-bold my-4 text-black text-center">映画を探す</h1>
@@ -44,6 +58,8 @@ export default function SearchPage() {
                 <MovieDetailModal
                     movie={selectedMovie}
                     onClose={() => setSelectedMovie(null)}
+                    onSubmit={handleRatingSubmit}
+                    onAddToWatchList={handleAddToWatchList}
                 />
             )}
         </div>

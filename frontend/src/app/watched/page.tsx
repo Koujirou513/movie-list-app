@@ -10,7 +10,7 @@ import { useMovieActions } from '@/hooks/useMovieActions';
 
 
 export default function WatchedPage() {
-  const { movies: watchedMovies, loading } = useMovies('watched');
+  const { movies: watchedMovies, loading, updateMovie } = useMovies('watched');
   const { movies, handleDelete } = useMovieActions(watchedMovies); 
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
@@ -19,6 +19,16 @@ export default function WatchedPage() {
   const handleMovieClick = (movie: any) => {
     setSelectedMovie(movie);
   };
+
+  const handleRatingSubmit = (updatedMovie: any) => {
+    updateMovie(updatedMovie);
+    setSelectedMovie(updatedMovie);
+  };
+
+  const handleAddToWatchList = (updatedMovie: any) => {
+    updateMovie(updatedMovie);
+    setSelectedMovie(null) // モーダルを閉じる
+  }
 
   return (
     <div>
@@ -38,6 +48,8 @@ export default function WatchedPage() {
         <MovieDetailModal
           movie={selectedMovie}
           onClose={() => setSelectedMovie(null)}
+          onSubmit={handleRatingSubmit}
+          onAddToWatchList={handleAddToWatchList}
         />
       )}
     </div>

@@ -9,9 +9,8 @@ import { useMovies } from '@/hooks/useMovies';
 import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function WatchListPage() {
-  const { movies: watchlistMovies, loading } = useMovies('watchList');
+  const { movies: watchlistMovies, loading, updateMovie } = useMovies('watchList');
   const { movies, handleDelete } = useMovieActions(watchlistMovies);
-
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   if (loading) return <p>Loading...</p>
@@ -19,6 +18,16 @@ export default function WatchListPage() {
   const handleMovieClick = (movie: any) => {
     setSelectedMovie(movie);
   };
+
+  const handleRatingSubmit = (updatedMovie: any) => {
+    updateMovie(updatedMovie);
+    setSelectedMovie(updatedMovie);
+  };
+
+  const handleAddToWatchList = (updatedMovie: any) => {
+    updateMovie(updatedMovie);
+    setSelectedMovie(null) // モーダルを閉じる
+  }
 
   return (
     <div>
@@ -38,6 +47,8 @@ export default function WatchListPage() {
         <MovieDetailModal
           movie={selectedMovie}
           onClose={() => setSelectedMovie(null)}
+          onSubmit={handleRatingSubmit}
+          onAddToWatchList={handleAddToWatchList} 
         />
       )}
     </div>

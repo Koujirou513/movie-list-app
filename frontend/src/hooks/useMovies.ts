@@ -29,5 +29,12 @@ export function useMovies(filter: 'watchList' | 'watched' | 'searched') {
         filteredMovies = movies.filter(movie => !movie.watchList && !movie.watched);
     }
 
-    return { movies: filteredMovies, loading};
+    // 映画を更新する関数
+    const updateMovie = (updatedMovie: any) => {
+        setMovies((prevMovies) => 
+            prevMovies.map((movie) => movie.ID === updatedMovie.ID ? updatedMovie : movie)
+        );
+    };
+
+    return { movies: filteredMovies, loading, updateMovie };
 }

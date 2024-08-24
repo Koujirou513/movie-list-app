@@ -4,7 +4,7 @@ import axios from 'axios';
 interface RatingModalProps {
     movieId: string;
     onClose: () => void;
-    onSubmit: (rating: number, review: string) => void;
+    onSubmit: (updatedMovie: any) => void;
 }
 
 const RatingModal: React.FC<RatingModalProps> = ({ movieId, onClose, onSubmit }) => {
@@ -18,11 +18,11 @@ const RatingModal: React.FC<RatingModalProps> = ({ movieId, onClose, onSubmit })
         }
 
         try {
-            await axios.put(`/api/movies/${movieId}/rate`, {
+            const response = await axios.put(`/api/movies/${movieId}/rate`, {
                 rating,
                 review,
             });
-            onSubmit(rating, review);
+            onSubmit(response.data);
             onClose();
         } catch (error) {
             console.error('Error submitting rating:', error);

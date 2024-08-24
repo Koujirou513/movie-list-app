@@ -6,9 +6,11 @@ import RatingModal from './RatingModal';
 interface MovieDetailModalProps {
     movie: any;
     onClose: () => void;
+    onSubmit: (updatedMovie: any) => void;
+    onAddToWatchList: (updatedMovie: any) => void;
 }
 
-export default function MovieDetailModal({ movie, onClose }: MovieDetailModalProps) {
+export default function MovieDetailModal({ movie, onClose, onSubmit, onAddToWatchList }: MovieDetailModalProps) {
     const [isRatingModalOpen, setIsRatingModalOpen] = useState(false);
 
     // モーダル以外をクリックで閉じる
@@ -18,14 +20,16 @@ export default function MovieDetailModal({ movie, onClose }: MovieDetailModalPro
         }
     }
 
-    const handleRatingSubmit = () => {
+    const handleRatingSubmit = (updatedMovie: any) => {
+        onSubmit(updatedMovie);
         setIsRatingModalOpen(false);
     }
 
     const handleAddToWatchList = async () => {
         try {
-            await axios.put(`/api/movies/watchlist/${movie.ID}`);
+            const response =  await axios.put(`/api/movies/watchlist/${movie.ID}`);
             console.log('観たい映画リストに送信したID:', movie.ID)
+            onAddToWatchList(response.data);
             alert('観たい映画リストに追加しました')
         } catch (error) {
             console.error('Error adding to watchlist', error);
