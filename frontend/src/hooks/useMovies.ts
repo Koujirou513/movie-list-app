@@ -37,5 +37,10 @@ export function useMovies(filter: 'watchList' | 'watched' | 'searched') {
         );
     };
 
-    return { movies: filteredMovies, loading, updateMovie };
+    // 映画を削除する関数
+    const deleteMovie = (ID: string) => {
+        setMovies((prevMovies) => prevMovies.filter((movie) => movie.ID !== ID));
+    };
+
+    return { movies: filteredMovies, loading, updateMovie, deleteMovie };
 }

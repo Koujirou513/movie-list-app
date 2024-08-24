@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import {  useState } from 'react';
 import MovieCard from '@/app/components/MovieCard';
 import MovieDetailModal from '@/app/components/MovieDetailModal';
 import PageSelectionBar from "../components/PageSelectionBar";
@@ -10,8 +9,8 @@ import { useMovieActions } from '@/hooks/useMovieActions';
 
 
 export default function WatchedPage() {
-  const { movies: watchedMovies, loading, updateMovie } = useMovies('watched');
-  const { handleDelete } = useMovieActions(); 
+  const { movies: watchedMovies, loading, updateMovie, deleteMovie } = useMovies('watched');
+  const { handleDelete } = useMovieActions(deleteMovie); 
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   const handleMovieClick = (movie: any) => {

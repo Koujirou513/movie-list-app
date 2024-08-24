@@ -1,7 +1,6 @@
 'use client'
 
-import { useState } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from 'react';
 import PageSelectionBar from '../components/PageSelectionBar';
 import SearchBar from '../components/SearchBar';
 import MovieCard from '../components/MovieCard';
@@ -11,12 +10,20 @@ export default function SearchPage() {
     const [movies, setMovies] = useState<any[]>([]);
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
+    useEffect(() => {
+        console.log("再描画のトリガー: 映画リストが更新されました", movies);
+    }, [movies]);
+
     const handleDelete = (ID: string) => {
         setMovies((prevMovies) => prevMovies.filter((movie) => movie.ID !== ID))
     }
 
     const handleSearchResults = (results: any) => {
-        setMovies(results);
+        console.log("検索された結果:", results);
+        // 単一オブジェクトの場合、配列としてラップ
+        const moviesArray = Array.isArray(results) ? results : [results];
+        setMovies(moviesArray);
+        console.log("状態更新後の映画リスト", moviesArray)
     };
 
     const handleRatingSubmit = (updatedMovie: any) => {

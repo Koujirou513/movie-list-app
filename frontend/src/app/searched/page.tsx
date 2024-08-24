@@ -9,8 +9,8 @@ import { useMovies } from "@/hooks/useMovies";
 import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function SearchedPage() {
-    const { movies: searchedMovies, loading, updateMovie } = useMovies('searched');
-    const { handleDelete } = useMovieActions();
+    const { movies: searchedMovies, loading, updateMovie, deleteMovie } = useMovies('searched');
+    const { handleDelete } = useMovieActions(deleteMovie);
     const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
     const handleMovieClick = (movie: any) => {

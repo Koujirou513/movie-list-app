@@ -17,12 +17,10 @@ export default function SearchBar({ onSearchResults }: SearchBarProps) {
 
         try {
             const response = await axios.get(`/api/movies/search`, {
-                params: {
-                    title,
-                    year,
-                },
+                params: { title, year },
             });
-            onSearchResults(response.data.Search || []);
+            console.log("検索結果:", response.data)
+            onSearchResults(response.data || []);
         } catch (error) {
             console.error('Search error:', error);
         }

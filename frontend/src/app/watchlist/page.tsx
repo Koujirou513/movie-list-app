@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import MovieCard from '@/app/components/MovieCard';
 import MovieDetailModal from '@/app/components/MovieDetailModal';
 import PageSelectionBar from "../components/PageSelectionBar";
@@ -9,8 +8,8 @@ import { useMovies } from '@/hooks/useMovies';
 import { useMovieActions } from "@/hooks/useMovieActions";
 
 export default function WatchListPage() {
-  const { movies: watchlistMovies, loading, updateMovie } = useMovies('watchList');
-  const { handleDelete } = useMovieActions();
+  const { movies: watchlistMovies, loading, updateMovie, deleteMovie } = useMovies('watchList');
+  const { handleDelete } = useMovieActions(deleteMovie);
   const [selectedMovie, setSelectedMovie] = useState<any | null>(null);
 
   const handleMovieClick = (movie: any) => {
@@ -29,7 +28,7 @@ export default function WatchListPage() {
 
   const handleDeleteMovie = (ID: string) => {
     handleDelete(ID, () => {
-      updateMovie(null); // 映画を削除後に状態を更新
+      deleteMovie(ID); // 映画を削除後に状態を更新
     })
   }
 
