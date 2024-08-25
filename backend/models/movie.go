@@ -23,7 +23,7 @@ type Movie struct {
     Metascore   string `json:"metascore,omitempty"`
     ImdbRating  string `json:"imdbRating,omitempty"`
     ImdbVotes   string `json:"imdbVotes,omitempty"`
-    ImdbID      string `json:"imdbID"`
+    ImdbID      string `json:"imdbID" gorm:"uniqueIndex"` // ユニーク制約
     Type        string `json:"type,omitempty"`
     DVD         string `json:"dvd,omitempty"`
     BoxOffice   string `json:"boxOffice,omitempty"`

@@ -2,21 +2,23 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
-	"fmt"
 
+	"github.com/joho/godotenv"
 	"github.com/koujirou513/movie-list-app/db"
 	"github.com/koujirou513/movie-list-app/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/joho/godotenv"
 )
 
 func main() {
+	// .envから環境変数を読み込む
 	godotenv.Load()
+	// データベース接続の初期化
 	db.Init()
-	defer db.Close()
+	defer db.Close() // メイン関数終了時にDB接続を閉じる
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -89,14 +91,7 @@ func searchMovies(c echo.Context) error {
 	if title == "" {
 		return c.JSON(http.StatusBadRequest, echo.Map{"message": "Title is required"})
 	}
-
-	// 重複チェック
-	var existingMovie models.Movie
-	if err := db.DB.Where("title = ? AND year = ? ", title, year).First(&existingMovie).Error; err == nil {
-		// すでに存在する場合はその映画情報を返す
-		return c.JSON(http.StatusOK, existingMovie)
-	}
-
+	// OMDB APIから映画情報を取得
 	omdbApiKey := os.Getenv("OMDB_API_KEY")
 	omdbUrl := fmt.Sprintf("http://www.omdbapi.com/?t=%s&y=%s&apikey=%s", title, year, omdbApiKey)
 
@@ -109,6 +104,12 @@ func searchMovies(c echo.Context) error {
 	var movie models.Movie
 	if err := json.NewDecoder(resp.Body).Decode(&movie); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{"message": "Error decoding movie details"})
+	}
+	// 重複チェック: imdbIDで映画がすでに存在するか確認
+	var existingMovie models.Movie
+	if err := db.DB.Where("imdb_id = ?", movie.ImdbID).First(&existingMovie).Error; err == nil {
+		// 映画がすでに存在する場合、その映画情報を返す
+		return c.JSON(http.StatusOK, existingMovie)
 	}
 	
 	// 映画情報をデータベースに保存
